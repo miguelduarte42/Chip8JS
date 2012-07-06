@@ -29,16 +29,16 @@ var canvasContext;
 			  window.webkitRequestAnimationFrame ||
 			  window.msRequestAnimationFrame	 ||
 			  window.oRequestAnimationFrame	  ||
-			  function(loop, element) {
+			  function(loop) {
 				  // fallback to setTimeout
 				  window.setTimeout(loop, 1000 / 60);
 			  };
 
-	window.animLoop = function(render, element) {
+	window.animLoop = function(render) {
 		var running, lastFrame = +new Date;
 		function loop(now) {
 			if (running !== false) {
-				raf(loop, element);
+				raf(loop);
 
 				// Make sure to use a valid time, since:
 				// - Chrome 10 doesn't return it at all
@@ -69,7 +69,7 @@ function initEmulator(canvas, scale) {
 	element.height = CANVAS_HEIGHT;
     canvasContext = element.getContext("2d");
 	vRam = new Array(HEIGHT*WIDTH);
-	window.animLoop(updateCanvas, element);
+	window.animLoop(updateCanvas);
 	setInterval("updateTimers()",REFRESH_RATE);
 	clear();
 }
