@@ -21,6 +21,41 @@ var loopTimeout;
 
 var canvasContext;
 
+// Cross browser, backward compatible solution for requestAnimatonFrame
+// Original from: https://gist.github.com/1114293#file_anim_loop_x.js
+(function(window, Date) {
+    // feature testing
+    var raf = window.mozRequestAnimationFrame    ||
+              window.webkitRequestAnimationFrame ||
+              window.msRequestAnimationFrame     ||
+              window.oRequestAnimationFrame      ||
+              function(loop, element) {
+                  // fallback to setTimeout
+                  window.setTimeout(loop, 1000 / 60);
+              };
+
+    window.animLoop = function(render, element) {
+        var running, lastFrame = +new Date;
+        function loop(now) {
+            if (running !== false) {
+                raf(loop, element);
+
+                // Make sure to use a valid time, since:
+                // - Chrome 10 doesn't return it at all
+                // - setTimeout returns the actual timeout
+                now = now && now > 1E4 ? now : +new Date;
+                var deltaT = now - lastFrame;
+                // do not render frame when deltaT is too high
+                if (deltaT < 160) {
+                    running = render( deltaT, now );
+                }
+                lastFrame = now;
+            }
+        }
+        loop();
+    };
+})(window, Date);
+
 window.onload = function(){
 	initEmulator("canvas", 5);
 }
